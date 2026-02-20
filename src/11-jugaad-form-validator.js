@@ -62,5 +62,92 @@
  *   // => { isValid: false, errors: { name: "...", email: "...", ... } }
  */
 export function validateForm(formData) {
-  // Your code here
+  let errors = {};
+
+  const name = formData.name;
+
+  if (
+    typeof name !== "string" ||
+    name.trim().length < 2 ||
+    name.trim().length > 50
+  ) {
+    errors["name"] = "Name must be 2-50 characters";
+  }
+
+  const email = formData.email;
+  let validEmail = true;
+
+  const firstAt = email.indexOf("@");
+  const lastAt = email.lastIndexOf("@");
+
+  if (firstAt === -1 || firstAt !== lastAt) {
+    validEmail = false;
+  }
+  if (!email.includes(".", firstAt)) {
+    validEmail = false;
+  }
+
+  if (validEmail === false) {
+    errors["email"] = "Invalid email format";
+  }
+
+  const phone = formData.phone;
+
+  const firstDigit = ["6", "7", "8", "9"];
+
+  const phoneregex = /^\d+$/;
+  if (
+    typeof phone !== "string" ||
+    phone.length !== 10 ||
+    !firstDigit.includes(phone.charAt(0)) ||
+    !phoneregex.test(phone)
+  ) {
+    errors["phone"] = "Invalid Indian phone number";
+  }
+
+  const age = formData.age;
+
+  if (typeof age === "string") {
+    const ageNumber = parseInt(age);
+    if (Number.isNaN(ageNumber)) {
+      errors["age"] = "Age must be an integer between 16 and 100";
+    }
+  } else if (
+    typeof age !== "number" ||
+    !Number.isInteger(age) ||
+    age < 16 ||
+    age > 100
+  ) {
+    errors["age"] = "Age must be an integer between 16 and 100";
+  }
+
+  const pincode = formData.pincode;
+  const pincodeRegex = /^\d+$/;
+  if (
+    typeof pincode !== "string" ||
+    pincode.length !== 6 ||
+    pincode.charAt(0) === "0" ||
+    !pincodeRegex.test(pincode)
+  ) {
+    errors["pincode"] = "Invalid Indian pincode";
+  }
+
+  const agreeTerms = formData.agreeTerms;
+
+  if (Boolean(agreeTerms) === false) {
+    errors["agreeTerms"] = "Must agree to terms";
+  }
+
+  const state = formData.state?.trim() ?? "";
+
+  if (state === "") {
+    errors["state"] = "State is required";
+  }
+
+  const isValid = Object.keys(errors).length === 0;
+
+  return {
+    isValid: isValid,
+    errors: errors,
+  };
 }

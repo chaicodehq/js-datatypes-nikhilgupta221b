@@ -47,5 +47,99 @@
  *   //      frequentContact: "Swiggy", allAbove100: false, hasLargeTransaction: true }
  */
 export function analyzeUPITransactions(transactions) {
-  // Your code here
+  if (
+    !Array.isArray(transactions) ||
+    transactions.length === 0 ||
+    transactions === null
+  ) {
+    return null;
+  }
+
+  const filteredTransactions = transactions.filter((trans) => {
+    const transactionCategories = ["credit", "debit"];
+
+    if (
+      trans.amount <= 0 ||
+      !transactionCategories.includes(trans.type.toLowerCase())
+    ) {
+      return false;
+    }
+    return true;
+  });
+
+  if (filteredTransactions.length === 0) {
+    return null;
+  }
+
+  const totalCredit = filteredTransactions.reduce((acc, trans) => {
+    if (trans.type === "credit") {
+      acc += trans.amount;
+    }
+    return acc;
+  }, 0);
+
+  const totalDebit = filteredTransactions.reduce((acc, trans) => {
+    if (trans.type === "debit") {
+      acc += trans.amount;
+    }
+    return acc;
+  }, 0);
+
+  const netBalance = totalCredit - totalDebit;
+
+  const transactionCount = filteredTransactions.length;
+
+  const avgTransaction = Math.round(
+    (totalCredit + totalDebit) / transactionCount,
+  );
+
+  const highestTransaction = [...filteredTransactions].sort(
+    (aTran, bTrans) => bTrans.amount - aTran.amount,
+  )[0];
+
+  const categoryBreakdown = filteredTransactions.reduce((acc, trans) => {
+    const categ = trans.category;
+
+    if (Object.hasOwn(acc, categ)) {
+      acc[categ] += trans.amount;
+    } else {
+      acc[categ] = trans.amount;
+    }
+
+    return acc;
+  }, {});
+
+  const frequentCountContact = filteredTransactions.reduce((acc, trans) => {
+    const to = trans.to;
+
+    if (Object.hasOwn(acc, to)) {
+      acc[to] += 1;
+    } else {
+      acc[to] = 1;
+    }
+    return acc;
+  }, {});
+
+  const frequentContact = [...Object.entries(frequentCountContact)].sort(
+    (aTo, bTo) => bTo[1] - aTo[1],
+  )[0][0];
+
+  const allAbove100 = filteredTransactions.every((trans) => trans.amount > 100);
+
+  const hasLargeTransaction = filteredTransactions.some(
+    (trans) => trans.amount >= 5000,
+  );
+
+  return {
+    totalCredit: totalCredit,
+    totalDebit: totalDebit,
+    netBalance: netBalance,
+    transactionCount: transactionCount,
+    avgTransaction: avgTransaction,
+    highestTransaction: highestTransaction,
+    categoryBreakdown: categoryBreakdown,
+    frequentContact: frequentContact,
+    allAbove100: allAbove100,
+    hasLargeTransaction: hasLargeTransaction,
+  };
 }

@@ -42,5 +42,58 @@
  *   // => "INVALID PASS"
  */
 export function generateLocalPass(passenger) {
-  // Your code here
+  function titleMaker(str) {
+    str = str.toLowerCase();
+
+    let words = str.split(" ");
+
+    for (let i = 0; i < words.length; i++) {
+      words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+    }
+
+    return words.join(" ");
+  }
+
+  if (typeof passenger !== "object" || passenger === null) {
+    return "INVALID PASS";
+  }
+
+  if (
+    !Object.hasOwn(passenger, "name") ||
+    !Object.hasOwn(passenger, "from") ||
+    !Object.hasOwn(passenger, "to") ||
+    !Object.hasOwn(passenger, "classType")
+  ) {
+    return "INVALID PASS";
+  }
+
+  if (
+    passenger.name === "" ||
+    passenger.from === "" ||
+    passenger.to === "" ||
+    passenger.classType === ""
+  ) {
+    return "INVALID PASS";
+  }
+
+  const validClassTypes = ["first", "second"];
+
+  if (!validClassTypes.includes(passenger.classType.toLowerCase())) {
+    return "INVALID PASS";
+  }
+
+  const passId =
+    passenger.classType.charAt(0).toUpperCase() +
+    passenger.from.slice(0, 3).toUpperCase() +
+    passenger.to.slice(0, 3).toUpperCase();
+
+  const result = `MUMBAI LOCAL PASS
+---
+Name: ${passenger.name.toUpperCase()}
+From: ${titleMaker(passenger.from)}
+To: ${titleMaker(passenger.to)}
+Class: ${passenger.classType.toUpperCase()}
+Pass ID: ${passId}`;
+
+  return result
 }

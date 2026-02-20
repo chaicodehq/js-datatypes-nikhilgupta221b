@@ -41,5 +41,92 @@
  *   // => { name: "Priya", totalMarks: 63, percentage: 31.5, grade: "F", ... }
  */
 export function generateReportCard(student) {
-  // Your code here
+  if (typeof student !== "object" || student === null) {
+    return null;
+  }
+
+  if (typeof student.name !== "string" || student.name.length === 0) {
+    return null;
+  }
+
+  if (
+    typeof student.marks !== "object" ||
+    Object.keys(student.marks).length === 0
+  ) {
+    return null;
+  }
+
+  const marks = Object.values(student.marks);
+
+  for (const mark of marks) {
+    if (typeof mark !== "number") {
+      return null;
+    }
+    if (mark < 0 || mark > 100) {
+      return null;
+    }
+  }
+
+  const totalMarks = marks.reduce((sum, num) => {
+    return sum + num;
+  }, 0);
+
+  const percentage = parseFloat(
+    ((totalMarks / (marks.length * 100)) * 100).toFixed(2),
+  );
+
+  let grade;
+
+  if (percentage >= 90) {
+    grade = "A+";
+  } else if (percentage >= 80) {
+    grade = "A";
+  } else if (percentage >= 70) {
+    grade = "B";
+  } else if (percentage >= 60) {
+    grade = "C";
+  } else if (percentage >= 40) {
+    grade = "D";
+  } else {
+    grade = "F";
+  }
+
+  const highest = Object.entries(student.marks).reduce(
+    (max, cur) => {
+      return cur[1] > max[1] ? cur : max;
+    },
+    ["", -Infinity],
+  );
+
+  const highestSubject = highest[0];
+
+  const lowest = Object.entries(student.marks).reduce(
+    (min, cur) => {
+      return cur[1] < min[1] ? cur : min;
+    },
+    ["", Infinity],
+  );
+
+  const lowestSubject = lowest[0];
+
+  const passedSubjects = Object.entries(student.marks)
+    .filter((obj) => obj[1] >= 40)
+    .map((obj) => obj[0]);
+  const failedSubjects = Object.entries(student.marks)
+    .filter((obj) => obj[1] < 40)
+    .map((obj) => obj[0]);
+
+  const subjectCount = marks.length;
+
+  return {
+    name: student.name,
+    totalMarks: totalMarks,
+    percentage: percentage,
+    grade: grade,
+    highestSubject: highestSubject,
+    lowestSubject: lowestSubject,
+    passedSubjects: passedSubjects,
+    failedSubjects: failedSubjects,
+    subjectCount: subjectCount,
+  };
 }

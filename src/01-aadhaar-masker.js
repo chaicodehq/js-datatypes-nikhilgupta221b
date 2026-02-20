@@ -28,5 +28,12 @@
  *   // => "INVALID"
  */
 export function maskAadhaar(aadhaarNumber) {
-  // Your code here
+  if (typeof aadhaarNumber != "string" || aadhaarNumber.length !== 12 || /\D/.test(aadhaarNumber)) {
+    return "INVALID";
+  }
+
+  const lastFour = aadhaarNumber.slice(-4);
+  let answer = "XXXX-".repeat(2) + lastFour;
+
+  return answer;
 }
